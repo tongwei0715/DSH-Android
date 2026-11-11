@@ -35,7 +35,7 @@ jobs:
           echo "Upstream latest tag: ${UPSTREAM_TAG}"
           echo "upstream_tag=${UPSTREAM_TAG}" >> "$GITHUB_OUTPUT"
 
-          if gh release view "${UPSTREAM_TAG}" >/dev/null 2>&1 && [ "${{ github.event.inputs.force_build }}" != "true" ]; then
+          if gh release view "${UPSTREAM_TAG}" --repo "${{ github.repository }}" >/dev/null 2>&1 && [ "${{ github.event.inputs.force_build }}" != "true" ]; then
             echo "Release ${UPSTREAM_TAG} already exists on this fork. Skipping."
             echo "should_build=false" >> "$GITHUB_OUTPUT"
           else
@@ -131,10 +131,10 @@ jobs:
             -o update/latest.json
           cp update/latest.json update.json
 
-          if gh release view "${TAG}" >/dev/null 2>&1; then
-            gh release upload "${TAG}" "${APK_FILE}" update.json --clobber
+          if gh release view "${TAG}" --repo "${{ github.repository }}" >/dev/null 2>&1; then
+            gh release upload "${TAG}" "${APK_FILE}" update.json --clobber --repo "${{ github.repository }}"
           else
-            gh release create "${TAG}" "${APK_FILE}" update.json -t "问问Ai ${TAG}" -F /tmp/notes-zh.md
+            gh release create "${TAG}" "${APK_FILE}" update.json -t "问问Ai ${TAG}" -F /tmp/notes-zh.md --repo "${{ github.repository }}"
           fi
 
           git add -A
