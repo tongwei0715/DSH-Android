@@ -137,7 +137,8 @@ jobs:
             gh release create "${TAG}" "${APK_FILE}" update.json -t "问问Ai ${TAG}" -F /tmp/notes-zh.md --repo "${{ github.repository }}"
           fi
 
-          git add -A
+          rm -f "${APK_FILE}" update.json
+          git add update/latest.json app/ brand_assets/ scripts/ tools/
           git commit -m "chore(release): 问问Ai ${TAG} (synced from upstream)" || true
           git push origin HEAD:main
           curl -s "https://purge.jsdelivr.net/gh/${{ github.repository }}@main/update/latest.json" || true
