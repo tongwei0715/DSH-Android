@@ -1,0 +1,143 @@
+name: Sync Upstream & Build WenWenAi Release
+
+on:
+  schedule:
+    # 每天北京时间 10:00 (UTC 02:00) 自动检查上游 jackwener/DSH-Android 是否有新版本
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      force_build:
+        description: '即使当前 Tag 已发布也强制重新构建并发布'
+        required: false
+        default: 'false'
+
+permissions:
+  contents: write
+
+jobs:
+  sync-and-release:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: 1. 检出当前仓库
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 2. 同步上游 jackwener/DSH-Android 最新源码与 Release Tag
+        id: upstream_sync
+        run: |
+          git config user.name "WenWenAi Bot"
+          git config user.email "bot@wenwenai.cn"
+          git remote add upstream https://github.com/jackwener/DSH-Android.git || true
+          git fetch upstream --tags
+
+          UPSTREAM_TAG=$(git tag -l "v*" --sort=-v:refname | head -n 1)
+          echo "Upstream latest tag: ${UPSTREAM_TAG}"
+          echo "upstream_tag=${UPSTREAM_TAG}" >> "$GITHUB_OUTPUT"
+
+          if gh release view "${UPSTREAM_TAG}" >/dev/null 2>&1 && [ "${{ github.event.inputs.force_build }}" != "true" ]; then
+            echo "Release ${UPSTREAM_TAG} already exists on this fork. Skipping."
+            echo "should_build=false" >> "$GITHUB_OUTPUT"
+          else
+            git merge --no-edit "upstream/main" -X theirs || true
+            echo "should_build=true" >> "$GITHUB_OUTPUT"
+          fi
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 3. 执行「问问Ai (wenwenai.cn)」幂等品牌重塑脚本
+        if: steps.upstream_sync.outputs.should_build == 'true'
+        run: |
+          python3 scripts/rebrand_wenwenai.py \
+            --repo-root . \
+            --app-name "问问Ai" \
+            --app-name-en "Wenwen.ai" \
+            --slogan "遇事不决，问问Ai" \
+            --slogan-en "Ask Wenwen.ai" \
+            --domain "wenwenai.cn" \
+            --github-repo "${{ github.repository }}"
+
+      - name: 4. 提取上游预编译 Native 引擎 (libnode.so) 与 dsh Engine 资产包
+        if: steps.upstream_sync.outputs.should_build == 'true'
+        run: |
+          TAG="${{ steps.upstream_sync.outputs.upstream_tag }}"
+          mkdir -p /tmp/upstream_apk toolchains/out/jniLibs/arm64-v8a toolchains/out/engine
+          curl -fSL -o /tmp/upstream_apk/upstream.apk \
+            "https://github.com/jackwener/DSH-Android/releases/download/${TAG}/DSH-Android-${TAG}-arm64.apk"
+
+          unzip -o -j -q /tmp/upstream_apk/upstream.apk \
+            "lib/arm64-v8a/libnode.so" \
+            "lib/arm64-v8a/libdshengine.so" \
+            "lib/arm64-v8a/libdshnode.so" \
+            "lib/arm64-v8a/libdsh_pty.so" \
+            "lib/arm64-v8a/libdsh_flock.so" \
+            "lib/arm64-v8a/librg.so" \
+            "lib/arm64-v8a/libc++_shared.so" \
+            -d toolchains/out/jniLibs/arm64-v8a/
+
+          unzip -o -j -q /tmp/upstream_apk/upstream.apk \
+            "assets/engine.zip" \
+            "assets/engine.sha256" \
+            "assets/engine-version.txt" \
+            "assets/size-report.txt" \
+            -d toolchains/out/engine/
+
+      - name: 5. 配置 JDK 21 与 Android SDK
+        if: steps.upstream_sync.outputs.should_build == 'true'
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          cache: 'gradle'
+
+      - name: 6. 解码专属签名密钥并编译正式版 APK (v1+v2+v3 签名)
+        if: steps.upstream_sync.outputs.should_build == 'true'
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 -d > /tmp/wenwen-release.jks
+          ./gradlew :app:assembleRelease \
+            -Pdsh.signing.storeFile=/tmp/wenwen-release.jks \
+            -Pdsh.signing.storePassword="${{ secrets.KEYSTORE_PASSWORD }}" \
+            -Pdsh.signing.keyAlias="${{ secrets.KEY_ALIAS }}" \
+            -Pdsh.signing.keyPassword="${{ secrets.KEY_PASSWORD }}"
+          rm -f /tmp/wenwen-release.jks
+
+      - name: 7. 生成 update.json 并发布 GitHub Release 与同步 latest.json
+        if: steps.upstream_sync.outputs.should_build == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TAG="${{ steps.upstream_sync.outputs.upstream_tag }}"
+          VER="${TAG#v}"
+          APK_FILE="WenWen-${VER}-arm64.apk"
+          cp app/build/outputs/apk/release/app-release.apk "${APK_FILE}"
+
+          cat <<EOF > /tmp/notes-zh.md
+          - **遇事不决，问问Ai**（官方网站 https://wenwenai.cn · 同步自上游 ${TAG}）
+          - 内嵌 Node.js 24.22.1 完整端侧 Agent 引擎，支持 Shizuku 隐形后台屏与 44 项原生工具
+          - 支持应用内通过 wenwenai.cn 与 GitHub/jsDelivr 多镜像自动检测并覆盖升级
+          EOF
+
+          cat <<EOF > /tmp/notes-en.md
+          - **Ask Wenwen.ai** (https://wenwenai.cn · synced with upstream ${TAG})
+          - Embedded Node.js 24.22.1 on-device AI Agent runtime with 44 native Android tools
+          EOF
+
+          python3 tools/make-update-manifest.py "${APK_FILE}" \
+            --tag "${TAG}" \
+            --repo "${{ github.repository }}" \
+            --url "https://wenwenai.cn/releases/${APK_FILE}" \
+            --notes-zh /tmp/notes-zh.md \
+            --notes-en /tmp/notes-en.md \
+            -o update/latest.json
+          cp update/latest.json update.json
+
+          if gh release view "${TAG}" >/dev/null 2>&1; then
+            gh release upload "${TAG}" "${APK_FILE}" update.json --clobber
+          else
+            gh release create "${TAG}" "${APK_FILE}" update.json -t "问问Ai ${TAG}" -F /tmp/notes-zh.md
+          fi
+
+          git add -A
+          git commit -m "chore(release): 问问Ai ${TAG} (synced from upstream)" || true
+          git push origin HEAD:main
+          curl -s "https://purge.jsdelivr.net/gh/${{ github.repository }}@main/update/latest.json" || true

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Русская локализация DSH. Перевод с китайского оригинала (values/). Стиль: «ты». -->
 <resources>
-    <string name="app_name">DSH</string>
+    <string name="app_name">Wenwen.ai</string>
     <string name="tile_label">Спросить DSH</string>
     <string name="a11y_description">Разреши DSH читать содержимое экрана, когда ты запускаешь задачу, и нажимать, вводить текст и свайпать за тебя. Данные отправляются только твоей настроенной модели в рамках запущенной тобой задачи и никуда не собираются и не передаются.</string>
     <string name="engine_running">Движок агента работает</string>
@@ -68,7 +68,7 @@
     <string name="dur_s">%1$d с</string>
     <string name="dur_sep">""</string>
     <string name="date_md">%1$d.%2$d</string>
-    <string name="hero_title">Исследуй неизведанное</string>
+    <string name="hero_title">Ask Wenwen.ai</string>
     <string name="composer_hint">Напиши сообщение или создай задачу, / — вызов команд</string>
     <string name="composer_hint_hero">Опиши, что должен сделать телефон, / — вызов команд</string>
     <string name="plus_hint">Добавить файл или вызвать команду</string>

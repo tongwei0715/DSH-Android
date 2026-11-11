@@ -28,8 +28,8 @@ import io.github.jackwener.dsh.R
 
 /** The DeepSeek whale (dsh FishLogo), drawn in the current text color. */
 @Composable
-fun Whale(modifier: Modifier = Modifier, width: Dp = 34.dp, tint: Color = Dsh.colors.labelPrimary) =
-    Icon(painterResource(R.drawable.dsw_whale), null, modifier.size(width, width * 17.04f / 23.16f), tint = tint)
+fun Whale(modifier: Modifier = Modifier, width: Dp = 34.dp, tint: Color = Color.Unspecified) =
+    Icon(painterResource(R.drawable.dsw_whale), null, modifier.size(width), tint = Color.Unspecified)
 
 /**
  * Running indicator whale: dsh animates a 28 px whale sprite; here the vector whale "swims"
@@ -49,8 +49,8 @@ fun Wordmark(modifier: Modifier = Modifier) {
     Row(modifier, verticalAlignment = Alignment.CenterVertically) {
         Whale(width = 24.dp)
         Spacer(Modifier.width(8.dp))
-        Text("deepseek", style = DshType.l20.copy(fontSize = 18.sp, lineHeight = 24.sp, fontWeight = FontWeight(600), letterSpacing = (-0.2).sp), color = Dsh.colors.labelPrimary)
+        Text("问问Ai", style = DshType.l20.copy(fontSize = 18.sp, lineHeight = 24.sp, fontWeight = FontWeight(600), letterSpacing = (-0.2).sp), color = Dsh.colors.labelPrimary)
         Spacer(Modifier.width(5.dp))
-        Text("HARNESS", style = DshType.xxxs11m.copy(letterSpacing = 1.sp), color = Dsh.colors.labelTertiary)
+        Text("WENWENAI.CN", style = DshType.xxxs11m.copy(letterSpacing = 1.sp), color = Dsh.colors.labelTertiary)
     }
 }

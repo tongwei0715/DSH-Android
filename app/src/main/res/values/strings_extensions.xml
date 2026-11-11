@@ -3,7 +3,7 @@
 <resources>
     <string name="set_extensions">扩展</string>
     <string name="set_extensions_desc">插件、技能和 MCP 服务</string>
-    <string name="ext_share_label">安装为 DSH 扩展</string>
+    <string name="ext_share_label">安装为 问问Ai 扩展</string>
     <string name="ext_tab_plugins">插件</string>
     <string name="ext_tab_skills">技能</string>
     <string name="ext_tab_mcp">MCP 服务</string>
@@ -89,7 +89,7 @@
     <string name="ext_last_error">最近的错误</string>
     <string name="ext_view_log">查看安装日志</string>
     <string name="ext_copy_diag">复制诊断信息</string>
-    <string name="ext_hardline_note">插件在自己代码里执行的命令，不经过 DSH 的命令确认。</string>
+    <string name="ext_hardline_note">插件在自己代码里执行的命令，不经过 问问Ai 的命令确认。</string>
     <string name="ext_readme_none">这个插件没有说明文档。</string>
     <string name="ext_waiting_for">在等待服务：%s</string>
     <string name="ext_inspecting">正在检查…</string>
@@ -101,8 +101,8 @@
     <string name="ext_card_published">发布时间</string>
     <string name="ext_card_size">大小</string>
     <string name="ext_card_changes">会修改：%s</string>
-    <string name="ext_trust_notice">插件会以和 DSH 引擎相同的权限运行：可以读写 DSH 的全部数据（包括对话记录，以及引擎能看到的 API 密钥），可以联网，也可以调用手机能力。只安装你信任的来源。</string>
-    <string name="ext_incompatible">%1$s 需要 DSH 引擎 %2$s，手机版目前是 %3$s。等 App 更新后再装。</string>
+    <string name="ext_trust_notice">插件会以和 问问Ai 引擎相同的权限运行：可以读写 问问Ai 的全部数据（包括对话记录，以及引擎能看到的 API 密钥），可以联网，也可以调用手机能力。只安装你信任的来源。</string>
+    <string name="ext_incompatible">%1$s 需要 问问Ai 引擎 %2$s，手机版目前是 %3$s。等 App 更新后再装。</string>
     <string name="ext_force_install">仍要安装（可能无法正常工作）</string>
     <string name="ext_phase_resolving">解析依赖</string>
     <string name="ext_phase_resolving_n">解析依赖（第 %1$d 个源，共 %2$d 个）</string>
@@ -131,12 +131,12 @@
     <string name="ext_registry_mirror">npmmirror</string>
     <string name="ext_registry_custom">自定义</string>
     <string name="ext_registry_custom_invalid">请输入 http(s) 地址</string>
-    <string name="err_native_addon">无法安装：它依赖原生模块（要为电脑编译的二进制程序），手机上的 DSH 运行不了这类插件。</string>
+    <string name="err_native_addon">无法安装：它依赖原生模块（要为电脑编译的二进制程序），手机上的 问问Ai 运行不了这类插件。</string>
     <string name="err_prebuilt_binary">无法安装：它带有电脑专用的二进制文件，手机上无法加载。已撤销安装。</string>
     <string name="err_needs_desktop_browser">无法安装：它要用电脑上的浏览器，手机上没有。</string>
-    <string name="err_needs_web_services">它需要 DSH 网页版才有的服务，手机版没有，暂时用不了。已撤销安装。</string>
-    <string name="err_not_bundle">这不是 DSH 插件（package.json 里没有 dsh.bundle 声明）。如果它是 MCP 服务器，请到「MCP 服务」里添加。</string>
-    <string name="err_incompatible_version">这个版本需要更新的 DSH 引擎，手机版暂时不支持。等 App 更新后再装。</string>
+    <string name="err_needs_web_services">它需要 问问Ai 网页版才有的服务，手机版没有，暂时用不了。已撤销安装。</string>
+    <string name="err_not_bundle">这不是 问问Ai 插件（package.json 里没有 dsh.bundle 声明）。如果它是 MCP 服务器，请到「MCP 服务」里添加。</string>
+    <string name="err_incompatible_version">这个版本需要更新的 问问Ai 引擎，手机版暂时不支持。等 App 更新后再装。</string>
     <string name="err_not_found">在下载源上找不到它。检查一下名字；刚发布的版本镜像可能还没同步，可以稍后再试，或者换到 npm 官方源。</string>
     <string name="err_network">连不上下载源。检查网络或代理，或者换个下载源。</string>
     <string name="err_integrity">下载的文件校验没通过（和登记的 sha512 不一致），已中止。多半是网络或镜像的问题，换个下载源再试。</string>
@@ -225,8 +225,8 @@
     <string name="ext_mcp_kind_remote">远程</string>
     <string name="ext_mcp_kind_npm">本地 · npm</string>
     <string name="ext_mcp_name_hint">用来区分它的工具，例如 github</string>
-    <string name="ext_indexes_desc">索引是一份插件列表（dsh 插件市场索引格式 1）。精选索引由 DSH-Android 维护；添加别人的索引前，请确认你信任它。</string>
-    <string name="ext_indexes_curated">DSH-Android 精选</string>
+    <string name="ext_indexes_desc">索引是一份插件列表（dsh 插件市场索引格式 1）。精选索引由 问问Ai 维护；添加别人的索引前，请确认你信任它。</string>
+    <string name="ext_indexes_curated">问问Ai 精选</string>
     <string name="ext_indexes_add">添加</string>
     <string name="ext_indexes_remove">移除</string>
     <string name="ext_indexes_restore">恢复精选索引</string>

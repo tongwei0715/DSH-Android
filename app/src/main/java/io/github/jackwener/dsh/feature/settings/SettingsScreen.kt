@@ -472,7 +472,7 @@ private fun AboutSection(vm: SettingsViewModel) {
     LaunchedEffect(Unit) { vm.runDoctor() }
     Spacer(Modifier.height(8.dp))
     SettingsCard {
-        SettingsRow("DSH", stringResource(R.string.version, BuildConfig.VERSION_NAME), divider = false,
+        SettingsRow("问问Ai", stringResource(R.string.version, BuildConfig.VERSION_NAME), divider = false,
             leading = { io.github.jackwener.dsh.core.designsystem.Whale(width = 22.dp) })
         val s by vm.settings.collectAsStateWithLifecycle()
         io.github.jackwener.dsh.feature.update.UpdateSettingsRows(vm.updater, s.autoUpdateCheck, { vm.setAutoUpdateCheck(it) })

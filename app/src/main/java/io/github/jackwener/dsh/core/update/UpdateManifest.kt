@@ -38,7 +38,7 @@ data class UpdateManifest(
 
     companion object {
         const val FORMAT = 1L
-        private const val REPO = "jackwener/DSH-Android"
+        private const val REPO = "tongwei0715/DSH-Android"
 
         /**
          * Where `update.json` is fetched from, in order (first valid one wins, the next starts a few
@@ -47,6 +47,7 @@ data class UpdateManifest(
          * jsDelivr CDNs the engine falls back to, js/packages/plugin-extensions/fetch-sources.js).
          */
         val SOURCES = listOf(
+            "https://wenwenai.cn/update/latest.json",
             "https://github.com/$REPO/releases/latest/download/update.json",
             "https://raw.githubusercontent.com/$REPO/main/update/latest.json",
             "https://cdn.jsdelivr.net/gh/$REPO@main/update/latest.json",
@@ -77,7 +78,7 @@ data class UpdateManifest(
                 s
             } ?: throw Invalid("$.apk.urls", "must be an array")
             if (urls.isEmpty()) throw Invalid("$.apk.urls", "must not be empty")
-            val apkName = apk.str("name")?.takeIf { it.isNotBlank() } ?: "DSH-Android-$name.apk"
+            val apkName = apk.str("name")?.takeIf { it.isNotBlank() } ?: "WenWen-$name-arm64.apk"
             val signer = hex64(root.str("signerSha256"), "$.signerSha256")
             val notes = when (val n = root["notes"]) {
                 null -> emptyMap()
