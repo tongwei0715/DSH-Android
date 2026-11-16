@@ -29,9 +29,9 @@ jobs:
           git config user.name "WenWenAi Bot"
           git config user.email "bot@wenwenai.cn"
           git remote add upstream https://github.com/jackwener/DSH-Android.git || true
-          git fetch upstream --tags
+          git fetch upstream --tags --force
 
-          UPSTREAM_TAG=$(git tag -l "v*" --sort=-v:refname | head -n 1)
+          UPSTREAM_TAG=$(gh release view --repo jackwener/DSH-Android --json tagName -q .tagName || git tag -l "v*" --sort=-v:refname | head -n 1)
           echo "Upstream latest tag: ${UPSTREAM_TAG}"
           echo "upstream_tag=${UPSTREAM_TAG}" >> "$GITHUB_OUTPUT"
 
@@ -39,7 +39,10 @@ jobs:
             echo "Release ${UPSTREAM_TAG} already exists on this fork. Skipping."
             echo "should_build=false" >> "$GITHUB_OUTPUT"
           else
-            git merge --no-edit "upstream/main" -X theirs || true
+            PRE_MERGE_SHA=$(git rev-parse HEAD)
+            git reset --hard "${UPSTREAM_TAG}"
+            git clean -fd
+            git checkout "${PRE_MERGE_SHA}" -- scripts/ brand_assets/ tools/ .github/workflows/ 2>/dev/null || true
             echo "should_build=true" >> "$GITHUB_OUTPUT"
           fi
         env:
